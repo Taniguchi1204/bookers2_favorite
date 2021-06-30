@@ -1,10 +1,21 @@
 class BooksController < ApplicationController
+  before_action :move_to_index, only:[:edit,:update,:destroy]
+
+  def move_to_index
+    @book = Book.find(params[:id])
+    if @book.user != current_user
+      redirect_to books_path
+    end
+  end
 
   def show
-    @book = Book.find(params[:id])
+    @book = Book.new
+    @book_detail = Book.find(params[:id])
+    @user = @book_detail.user
   end
 
   def index
+    @book = Book.new
     @books = Book.all
   end
 
@@ -34,16 +45,16 @@ class BooksController < ApplicationController
     end
   end
 
-  def delete
+  def destroy
     @book = Book.find(params[:id])
-    @book.destoy
+    @book.destroy
     redirect_to books_path
   end
 
   private
 
   def book_params
-    params.require(:book).permit(:title)
+    params.require(:book).permit(:title,:body)
   end
 
 end
